@@ -1,0 +1,60 @@
+package springsecurity.ssia.ch3.ex2.model;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.List;
+
+/**
+ * 학습 편의를 위해서 데이터 값과 스프링 시큐리티에서 사용할
+ * 사용자 세부 정보 클래스를 하나로 합침.
+ */
+public class User2 implements UserDetails {
+
+    private final String username;
+    private final String password;
+
+    private final String authority;
+
+    public User2(String username, String password, String authority) {
+        this.username = username;
+        this.password = password;
+        this.authority = authority;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(() -> authority);
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return username;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+}
