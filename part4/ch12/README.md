@@ -228,19 +228,43 @@ CSRF 대신 JWT 토큰을 사용할 수도 있다. ch10, ch11
 blog.intothesymmetry.com/2015/06/on-oauth-token-hijacks-for-fun-and.html 참고 
 ```
 
-## 간단한 SSO(Single Sign-On) 애플리케이션 구현하기
+## 깃허브 인증을 사용해서 간단한 SSO 애플리케이션 로그인 구현하기
 
-승인 코드 그랜트 유형으로 스프링 시큐리티로 OAuth 2 를 적용하는 방법을 개략적으로 살펴본다! 
+Single Sign On 이란 사용자가 권한부여서버에서 인증하고 애플리케이션이 토큰으로 로그인 상태를 유지하는 것을
 
-### 권한 부여 서버 관리
+의미한다. (한마디로 승인 그랜트 유형이네) 337 p 
 ```
-* 시나리오 
+승인코드 그랜트유형을 깃허브 인증으로하는 간단한 LoginIn 을 구현해본다. OAuth 2 로그인에 관한 자세한 내용은 아래 
+링크를 참고한다. 
+(아래 내용을 바탕으로 애플리케이션을 구현한다. 부족한 내용은 참고) 
 
-깃 허브를 권한 부여 서버로 구성해보자! (직접 권한 부여 서버를 구현하는 것은 13 장에서 한다!)
-https://github.com/settings/applications/new
+https://github.com/eternalrecurrenceofthesame/Spring-security-in-action/tree/main/part4/OAuth2-spring-security/OAuth2-login
+```
+```
+* 외부 인증 개념에 대해서
 
-사용자는 localhost:8080 리소스를 호출한다. 애플리케이션에서는 승인 코드 그랜트를 이용해서 338 p
-사용자가 브라우저에서 로그인(인증) 하도록 권한 부여 서버(깃 허브)로 리디렉션 하고 사용자는 사용자 인증을 한다. 
+한가지 주의할 개념은 깃허브나 다른 외부 인증을 사용한다고 해서 인증서버를 직접 구현하는 것이 아니다. 인증서버를 구현하는
+방식에는 키클록 같은 인증서버를 사용하거나 직접 인증서버를 시큐리티 코드로 구현하는 방법이 있다.
+
+외부 인증 시스템으로써 시큐리티가 제공하는 CommonOAuth2Provider(구글,깃헙,페이스북,옥타) 를 사용하면 인증에 필요한 토큰을 
+쉽게 받을 수 있지만 이것만으로는 인증 서버라고 할 수 없다. 
+
+여기서는 간단하게 외부 시스템으로부터 토큰을 받고 로그인에 이용하는 방법을 구현한다. 
+
+권한부여 서버와 리소스 서버의 구현, 키클록을 이용한 권한부여 서버에 관한 것은 아래 내용들을 참고한다. 
+https://github.com/eternalrecurrenceofthesame/Spring-security-in-action/tree/main/part4/OAuth2-spring-security/OAuth2-authentication
+https://github.com/eternalrecurrenceofthesame/Spring-security-in-action/tree/main/part4/OAuth2-spring-security/OAuth2-resource
+https://github.com/eternalrecurrenceofthesame/Spring-security-in-action/tree/main/part4/ch18
+```
+### 외부 인증서버 관리(깃 허브)
+```
+* 시나리오
+
+https://github.com/settings/applications/new 에서 깃허브 인증 서버를 구현한다
+간단하게 애플리케이션 이름과 URL, 콜백 URL 을 설정한다.
+
+사용자가 localhost:8080 리소스를 호출한다. 권한 부여 서버는 웹 애플리케이션을 사용자 인증 페이지로 리다이렉트한다.
+사용자가 인증에 성공하면 
 
 권한 부여 서버는 권한 부여 서버에 정의된 콜백 URL(localhost:8080) 로 클라이언트(브라우저) 를 다시 호출한다.  
 
@@ -248,10 +272,23 @@ Tip
 권한 부여 서버를 외부로 노출하지 말아야 한다! 이런 자격 증명으로 기밀 정보에 접근할 수 있다!
 또한 자격 증명을 깃 허브 같은  공개된 리포지토리에 저장할 때는 주의 해야한다. 
 ```
-
 ### SSO 애플리케이션 구현 시작
+```
+* controller 
+```
+```
+* config
 
-ex 12 single-sign-on 참고 
+http.basic 이나 http.fromLogin() 과 마찬가지로 http.ouath2Login() 을 사용하면 필터 체인에 OAuth2LoginAuthenticationFilter 
+를 추가한다. 이 필터는 요청을 가로채고 OAuth 2 인증에 필요한 논리를 적용한다. 342 p 
+
+OAuth2LoginAuthenticationFiler 는 ClientRegistrationRepository 에서 등록된 인증 서버에 관한 세부 정보를 얻는다.
+
+
+참고로 권한 부여 서버를 직접 구현하고 인증 클라이언트 유형을 등록하는 경우 RegisteredClientRepository 를 사용한다. 아래 예제 참고
+https://github.com/eternalrecurrenceofthesame/Spring-security-in-action/tree/main/part4/OAuth2-spring-security/OAuth2-authentication
+https://github.com/eternalrecurrenceofthesame/Spring-MSA/tree/main/part02/ch11
+```
 
 ```
 * config
