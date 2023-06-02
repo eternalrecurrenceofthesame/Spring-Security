@@ -40,6 +40,10 @@ public class AuthServerConfig {
      * 권한 부여 서버에 접근할 수 있는 클라이언트를 정의하고 클라이언트 정보를 저장하는 저장소를 만든다.
      *
      * 데이터 베이스로 관리하는 클라이언트 세부 정보 만들어 보기! 메모리는 학습 용도로만 사용한다.
+     * 
+     * 권한부여 서버에서 사용하는 RegistredClientRepository 와 외부인증 시스템을 저장하는 ClientRegistrationRepository 는
+     * 서로 다른 개념이다.
+     * https://github.com/eternalrecurrenceofthesame/Spring-security-in-action/edit/main/part4/ch12/README.md 참고
      */
     @Bean
     public RegisteredClientRepository registeredClientRepository(){
