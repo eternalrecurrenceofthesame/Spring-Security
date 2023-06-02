@@ -288,14 +288,11 @@ OAuth2LoginAuthenticationFiler 는 ClientRegistrationRepository 에서 등록된
 참고로 권한 부여 서버를 직접 구현하고 인증 클라이언트 유형을 등록하는 경우 RegisteredClientRepository 를 사용한다. 아래 예제 참고
 https://github.com/eternalrecurrenceofthesame/Spring-security-in-action/tree/main/part4/OAuth2-spring-security/OAuth2-authentication
 https://github.com/eternalrecurrenceofthesame/Spring-MSA/tree/main/part02/ch11
+
+즉 ClientRegistrationRepository 와 RegisteredClientRepository 는 다른 개념임 아래 내용을 참고한다.
+https://docs.spring.io/spring-authorization-server/docs/current/reference/html/core-model-components.html
 ```
 
-```
-* config
-
-http.oauth2Login(); 를 호출하면 프레임 워크는 OAuth2LoginAuthenticationFilter 를 필터 체인에 추가한다
-CorsFilter -> ... -> CsrfFilter -> ... OAuth2Filter 
-```
 ```
 * ClientRegistration 구현하기 ProjectConfig 참고
 
