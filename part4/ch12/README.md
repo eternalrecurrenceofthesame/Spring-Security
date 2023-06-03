@@ -247,7 +247,7 @@ https://github.com/eternalrecurrenceofthesame/Spring-security-in-action/tree/mai
 방식에는 키클록 같은 인증서버를 사용하거나 직접 인증서버를 시큐리티 코드로 구현하는 방법이 있다.
 
 외부 인증 시스템으로써 시큐리티가 제공하는 CommonOAuth2Provider(구글,깃헙,페이스북,옥타) 를 사용하면 인증에 필요한 토큰을 
-쉽게 받을 수 있지만 이것만으로는 인증 서버라고 할 수 없다. 
+쉽게 받을 수 있지만 이것만으로는 스프링 시큐리티 권한 부여 서버를 구현한다고 할 수 없다. 
 
 여기서는 간단하게 외부 시스템으로부터 토큰을 받고 로그인에 이용하는 방법을 구현한다. 
 
@@ -263,7 +263,7 @@ https://github.com/eternalrecurrenceofthesame/Spring-security-in-action/tree/mai
 https://github.com/settings/applications/new 에서 깃허브 인증 서버를 구현한다
 간단하게 애플리케이션 이름과 URL, 콜백 URL 을 설정한다.
 
-사용자가 localhost:8080 리소스를 호출한다. 권한 부여 서버는 웹 애플리케이션을 사용자 인증 페이지로 리다이렉트한다.
+사용자가 localhost:8080 리소스를 호출한다. 인증 서버는 웹 애플리케이션을 사용자 인증 페이지로 리다이렉트한다.
 사용자가 인증에 성공하면 
 
 권한 부여 서버는 권한 부여 서버에 정의된 콜백 URL(localhost:8080) 로 클라이언트(브라우저) 를 다시 호출한다.  
@@ -289,15 +289,28 @@ OAuth2LoginAuthenticationFiler 는 ClientRegistrationRepository 에서 등록된
 https://github.com/eternalrecurrenceofthesame/Spring-security-in-action/tree/main/part4/OAuth2-spring-security/OAuth2-authentication
 https://github.com/eternalrecurrenceofthesame/Spring-MSA/tree/main/part02/ch11
 
-즉 ClientRegistrationRepository 와 RegisteredClientRepository 는 다른 개념임 아래 내용을 참고한다.
+즉 ClientRegistrationRepository 와 RegisteredClientRepository 는 다른 개념이다. 아래 내용을 참고한다.
 https://docs.spring.io/spring-authorization-server/docs/current/reference/html/core-model-components.html
+```
+#### + OAuth2LoginAuthenticationFilter 에 대해서
+```
+이 필터는 앞서 설명했듯이 oath2Login 을 사용하면 적용되는 필터이다. 이 필터는 ClientRegistrationRepository
+에 등록된 외부 인증 서버에 관한 세부 정보를 사용한다.
+
+이 필터는 승인 코드 그랜트 유형에서 사용자가 권한 부여 서버에서 인증을하고 클라이언트가 승인 코드와 상태정보를 이용해서
+권한 부여 서버에서 토큰을 발급 받은 후 리소스를 호출하기 전에 사용된다. 
+
+이 필터는  OAuth2LoginAuthenticationToken 을 생성하고 AuthenticationManager 를 호출하는 역할을 한다.
+
+리소스 서버에서 인증 토큰을 사용하는 과정에대해서는 아래 내용을 참고한다. 
+https://github.com/eternalrecurrenceofthesame/Spring-security-in-action/tree/main/part4/OAuth2-spring-security/OAuth2-resource#readme
 ```
 
 ```
 * ClientRegistration 구현하기 ProjectConfig 참고
 
-OAuth 2 클라이언트와 권한 부여 서버(깃 허브 서버) 간의 연결을 구현해보자! 깃허브가 애플리케이션의 권한 부여 서버임을
-설정하기 위해 ClientRegistration 계약을 정의해야 한다.
+OAuth 2 클라이언트와 인증 서버(깃 허브 서버) 간의 연결을 구현해보자! 깃허브가 애플리케이션의 인증 서버임을 설정하기 위해
+ClientRegistration 계약을 정의해야 한다.
 
 ClientRegistration 구현 명세 (필수 명세)
 
@@ -308,24 +321,22 @@ ClientRegistration 구현 명세 (필수 명세)
 
 애플리케이션이 인증 프로세스를 진행하려면 이러한 세부 정보가 모두 필요하다! 
 
-권한 부여 서버를 직접 개발하지 않는 경우 OAuth 2 클라이언트와 권한 부여 서버를 연결하기 위한 설명서가 
+권한 부여 서버를 직접 개발하지 않는 경우 OAuth 2 클라이언트와 외부 인증 서버를 연결하기 위한 설명서가 
 필요할 수도 있다. (기본적으로 구현해야하는 필수 명세 외의 필요한 정보가 있을수 있음)
 
 깃 허브 권한 부여 서버를 사용하면
 developer.github.com/apps/building-oauth-paas/authorizing-oauth-apps 에서 확인 가능하다. 
-
 ```
 ```
 * CommonOAuth2Provider 를 정의해서 연결하기 ProjectConfig 참고 
 
-구글, 깃허브, 페이스북, 옥타 같은 일반적인 권한 부여 서버 공급자를 이용하면 Provider 를 이용해서 간편하게 구현할 수 있다.
+구글, 깃허브, 페이스북, 옥타 같은 일반적인 인증 서버 공급자를 이용하면 Provider 를 이용해서 간편하게 구현할 수 있다.
 이런 일반적 공급자가 아니라면 ClientRegistration 을 완전히 정의해야 한다.
 
 Tip
 클라이언트 아이디와 클라이언트 비밀은 자격 증명이므로 중요 데이터에 해당한다. 실제 애플리케이션에서는 비밀 볼트에서
 이 값을 얻어야 한다. 예제에서 처럼 소스 코드에 바로 자격 증명을 지정해서는 안 된다.
 ```
-
 ### ClientRegistrationRepository 구현하기
 
 권한 부여 서버가 인증에 사용하는 ClientRegistration 인스턴스를 스프링 시큐리티에 등록해보자! 
