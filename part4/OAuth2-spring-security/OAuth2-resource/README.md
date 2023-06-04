@@ -6,11 +6,21 @@
 
 https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/index.html 참고
 
+#### + 인가(Authoriztaion) 와 인증(Authentication) 에 대해서 
 ```
-* 인증되지 않은 사용자가 리소스를 요청하는 시나리오
+인가(Authorization)란 인증된 사용자가 요청한 자원에 접근 가능한지를 결정하는 절차이며 인증(Authentication)은 해당 사용자가
+본인이 맞는지 확인하는 절차이다.
 
-1. 인증되지 않은 사용자가 리소스 엔드포인트를 요청한다.
-2. 스프링 시큐리티의 FilterSecurityInterceptor 는 인증되지 않은 요청을 거부하고 AccessDeniedException 을 던진다.
+두 용어가 한글로는 비슷해보이지만 실제 의미는 다르기 때문에 구분할 수 있어야한다. 두 개념의 차이점은 인가를 하는 곳은 권한부여
+서버가되고 인증 절차는 리소스서버에서 발생한다는 것이다. (혼동하지 말자!)
+
+출처 https://wildeveloperetrain.tistory.com/50
+```
+```
+* 인가되지 않은 사용자가 리소스를 요청하는 시나리오
+
+1. 인가되지 않은 사용자가 리소스 엔드포인트를 요청한다.
+2. 스프링 시큐리티의 FilterSecurityInterceptor 는 인가되지 않은 요청을 거부하고 AccessDeniedException 을 던진다.
 
 3. Since the user is not authenticated, ExceptionTranslationFilter initiates Start Authentication. 
 The configured AuthenticationEntryPoint is an instance of BearerTokenAuthenticationEntryPoint,
@@ -23,11 +33,10 @@ AuthenticationEntryPoint is used to send an HTTP response that requests credenti
 https://docs.spring.io/spring-security/reference/servlet/authentication
 /architecture.html#servlet-authentication-authenticationentrypoint 참고
 ```
-
 ```
 * 인증된 사용자가 리소스를 요청하는 시나리오
 
-1. 클라이언트가 bearer token 을 헤더 값으로 요청하면 BearerTokenAuthenticationFilter 는 
+1.인증된 클라이언트가 bearer token 을 헤더 값으로 요청하면 BearerTokenAuthenticationFilter 는 
 HttpServletRequest 헤더값의 토큰을 추출해서 BearerTokenAuthenticationToken 을 만든다.
 
 2. Next, the HttpServletRequest is passed to the AuthenticationManagerResolver,
@@ -43,8 +52,11 @@ The SecurityContextHolder is where Spring Security stores the details of who is 
 
 4. 인증에 성공하게 되면 인증 정보가 시큐리티 컨텍스트 홀더에 저장되고 BearerTokenAuthenticationFilter 는 
 다음 필터를 호출해서 나머지 어플리케이션 로직을 실행한다.
-```
 
+
+인증 정보는 최종적으로 인메모리 세션 저장소인 SecurityContextHolder에 세션 - 쿠키 방식으로 저장된다.
+https://wildeveloperetrain.tistory.com/50 참고 
+```
 ## OAuth 2.0 Resource Server JWT
 
 JWT 를 사용하는 리소스 서버를 만들어보자! 
@@ -85,7 +97,7 @@ spring:
 ![authenticaitonprovider](./jwtauthenticationprovider.png) 
 
 ```
-1. 앞서 설명했다 시피 인증 필터는 Bearer Token 을 BearerTokenAuthenticationToken 으로 만들어서 
+1. 앞서 설명했다 시피 인가 필터는 Bearer Token 을 BearerTokenAuthenticationToken 으로 만들어서 
 AuthenticationManager(wich is implemented by ProviderManager) 로 전달한다.
 
 2. ProviderManager 는 JwtAuthenticationProvider 로 구성되어 있다 
@@ -95,14 +107,13 @@ AuthenticationManager(wich is implemented by ProviderManager) 로 전달한다.
 4. JwtAuthenticationProvider then uses the JwtAuthenticationConverter to convert the Jwt
 into a Collection of granted authorities.
 
-5. 인증에 성공하면 BearerTokenAuthenticationToken(Authentication) 을 JwtAuthenticationToken 으로 반환한다.
+5. 인가에 성공하면 BearerTokenAuthenticationToken(Authentication) 을 JwtAuthenticationToken 으로 반환한다.
 JwtAuthenticationToken 은 JWT(principal) 와 Authorities 로 구성되어
 
 최종적으로 인증 필터에 의해서 SecurityContextHolder 에 저장되고 HTTP 응답으로 토큰이 반환된다. 395 p
 
 참고로 권한 부여 서버와 리소스 서버는 하나의 애플리케이션으로 구현해도 된다. 396 p
 ```
-
 ## JWK 를 얻을 수 있는 URI 설정하기
 ```
 JWK 란?
@@ -140,11 +151,20 @@ We still specify the issuer-uri so that Resource Server still validates the iss 
 https://www.baeldung.com/spring-security-oauth-auth-server 
 https://www.appsdeveloperblog.com/spring-authorization-server-tutorial/ 예제 참고.
 ```
-
 ## OAuth 2 리소스 서버 커스텀 설정 만들기!
 
 OAuth2ResourceServerConfig 참고
 
+리소스 서버의 커스텀에 관한 내용은 이론적인 부분만으로는 이해가 되지 않기 때문에 리소스 서버의 전체적인 애플리케이션을
+
+구현한 아래의 내용을 우선적으로 참고한다. 
+```
+키클록을 사용한 권한부여 서버 및 리소스 서버의 구현
+https://github.com/eternalrecurrenceofthesame/Spring-security-in-action/tree/main/part4/ch18
+
+마이크로서비스 시큐리티 보안 구현
+https://github.com/eternalrecurrenceofthesame/Spring-MSA/tree/main/part02/ch11
+```
 ```
 * Custom JWT Configuration
 
@@ -185,7 +205,6 @@ http
 
 return http.build();}
 ```
-
 ### CustomDecoder 만들어서 자바 설정으로 등록하기 
 ```
 * 커스텀 디코더 양식
@@ -214,7 +233,6 @@ JwtDecoder 를 빈으로 등록해서 사용할 수 있다.// Or, exposing a Jwt
 커스텀 디코더를 직접 만들면 validation, mapping, or request timeouts 같은 설정을 할 수 있다.
 This is handy when deeper configuration, like validation, mapping, or request timeouts, is necessary.
 ```
-
 ### 디코더 알고리즘 설정하기
 ```
 NimbusJwtDecoder 는 디코딩 알고리즘으로 RS 256 을 기본 값으로 사용하지만 다른 값을 사용할 수 있음
@@ -257,10 +275,9 @@ public JwtDecoder jwtDecoder() {
     return new NimbusJwtDecoder(jwtProcessor);
 }
 ```
-
 ## 비대칭 공개 키를 직접 받아서 사용하기
 
-디코더를 만들어서 사용할 수도 있지만 인증 서버로부터 퍼블릭 키를 직접 받아 올 수도 있음.
+디코더를 만들어서 사용할 수도 있지만 인증 서버로부터 퍼블릭 키를 직접 받아 올 수도 있다.
 
 ```
 * xml 설정
@@ -300,7 +317,6 @@ return NimbusJwtDecoder.withPublicKey(this.key).build();}
 public JwtDecoder jwtDecoder() {
     return NimbusJwtDecoder.withSecretKey(this.key).build();}
 ```
-
 ## 리소스 서버 인증 권한(클라이언트 스코프) 를 설정하는 방법 
 ```
 JWT 스코프로 리소스 엔드포인트 권한을 부여하려면 접두사를 붙여줘야 한다.
@@ -406,9 +422,7 @@ be configured with a clockSkew to alleviate the above problem
         
         오차 범위를 60 초 이내로 줄인다는 말인듯? 
 ```
-
 ### Configuring a Custom Validator
-
 ```
 * aud(발행자) 를 검증하는 간단한 로직을 만들어 보겟음.
 
@@ -453,6 +467,4 @@ JwtDecoder jwtDecoder() {
 
     return jwtDecoder;
 }
-
-
 ```
