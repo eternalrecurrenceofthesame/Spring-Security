@@ -30,18 +30,18 @@ import java.util.UUID;
 
 
 /**
- * 권한 부여 서버 설정 클래스
+ * 인가(Authorization) 서버 설정 클래스
  */
 @Configuration
 public class AuthServerConfig {
 
 
     /**
-     * 권한 부여 서버에 접근할 수 있는 클라이언트를 정의하고 클라이언트 정보를 저장하는 저장소를 만든다.
+     * 인가 서버에 접근할 수 있는 클라이언트를 정의하고 클라이언트 정보를 저장하는 저장소를 만든다.
      *
      * 데이터 베이스로 관리하는 클라이언트 세부 정보 만들어 보기! 메모리는 학습 용도로만 사용한다.
      * 
-     * 권한부여 서버에서 사용하는 RegistredClientRepository 와 외부인증 시스템을 저장하는 ClientRegistrationRepository 는
+     * 인가 서버에서 사용하는 RegistredClientRepository 와 외부인증 시스템을 저장하는 ClientRegistrationRepository 는
      * 서로 다른 개념이다.
      * https://github.com/eternalrecurrenceofthesame/Spring-security-in-action/edit/main/part4/ch12/README.md 참고
      */
@@ -63,7 +63,7 @@ public class AuthServerConfig {
     }
 
     /**
-     * 권한 부여 서버는 액세스 토큰을 발행할 때 비밀 키를 이용해 토큰에 서명한다!
+     * 인가 서버는 액세스 토큰을 발행할 때 비밀 키를 이용해 토큰에 서명한다!
      *
      * JWT 토큰을 서명하는 데 사용되는 JWK 를 만든다. 2048바이트 RSA 키를 생성해서 사용한다.
      */
@@ -93,7 +93,7 @@ public class AuthServerConfig {
     }
 
     /**
-     * 권한 부여 서버의 고유한 발급자를 지정한다
+     * 인가 서버의 고유한 발급자를 지정한다
      */
     @Bean
     public ProviderSettings providerSettings(){
