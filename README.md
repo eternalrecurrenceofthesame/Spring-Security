@@ -23,7 +23,7 @@ KeyCloak 권한 부여서버를 사용한 실전 프로젝트는 스프링 부�
 * part 4
   * [OAuth 2 시작](https://github.com/eternalrecurrenceofthesame/Spring-security-in-action/tree/main/part4/OAuth2-spring-security)
   * [OAuth 2 메커니즘](https://github.com/eternalrecurrenceofthesame/Spring-security-in-action/tree/main/part4/ch12)
-  * [OAuth 2 권한 부여 서버 구현](https://github.com/eternalrecurrenceofthesame/Spring-security-in-action/tree/main/part4/OAuth2-spring-security/OAuth2-authentication)
+  * [OAuth 2 권한 부여 서버 구현](https://github.com/eternalrecurrenceofthesame/Spring-security-in-action/tree/main/part4/OAuth2-spring-security/OAuth2-authorization)
   * [OAuth 2 리소스 서버 구현](https://github.com/eternalrecurrenceofthesame/Spring-security-in-action/tree/main/part4/OAuth2-spring-security/OAuth2-resource)
   * [전역 메서드 보안: 사전 사후 권한 부여](https://github.com/eternalrecurrenceofthesame/Spring-security-in-action/tree/main/part4/ch16)
   * [전역 메서드 보안: 사전 및 사후 필터링](https://github.com/eternalrecurrenceofthesame/Spring-security-in-action/tree/main/part4/ch17)
