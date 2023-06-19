@@ -6,28 +6,30 @@
 프로그래머는 프레임워크의 추상화를 알고 이를 이용해 통합한다. 
 ```
 ## 스프링 시큐리티의 인증 구현
-
 ```
-* 사용자 관리를 위한 인터페이스
+* 사용자(UserDetails) 관리를 위한 인터페이스
 
 UserDetailsService - 사용자 이름으로 사용자 검색
 UserDetailsManager - 사용자 추가, 수정 삭제 
 
-두 계약을 분리하는 것은 ISP 의 훌륭한 예시다!
-ISP 란? -> 특정 클라이언트를 위한 인터페이스 여러 개가 범용 인터페이스 하나보다 낫다는 뜻
+UserDetailsService 는 사용자 이름으로 사용자를 검색할 수 있는 인터페이스이고 UserDetailsManager 는
+검색 기능에 더해서 사용자의 추가 수정 삭제기능이 추가되었다. 이것은 두 계약을 분리한 것이다.
 
 인터페이스를 분리해서 필요 없는 동작을 구현하도록 강제하지 않는다.(유연성 향상)
+
+두 계약을 분리하는 것은 ISP 의 훌륭한 예시다!
+ISP 란? -> 특정 클라이언트를 위한 인터페이스 여러 개가 범용 인터페이스 하나보다 낫다는 뜻
 ```
 
 UserDetailsManager -> UseDetailsServie -> UserDetails(사용자) <- GrantedAuthority
 
-UserDetails 계약으로 사용자를 구현하고 확장한다 (service, manager)
+UserDetails 계약으로 사용자를 구현하고 확장한다.
 
 GrantedAuthority 는 하나 이상의 권한으로 구현된다, 사용자는 하나 이상의 Granted 계약을 가진다 
 
 ## 사용자 기술하기
 
-프레임워크가 사용자를 인식할 수 있게 사용자를 구현하는 것은 인증 흐름을 구축하기 위한 필수 단계
+프레임워크가 사용자를 인식할 수 있게 사용자를 구현하는 것은 인증 흐름을 구축하기 위한 필수 단계이다.
 
 어플리케이션 사용자에 따라 권한이 부여되기 때문. 사용자 정의는 UserDetails 계약을 준수한다.
 
@@ -95,18 +97,17 @@ User.UserBuilder builder1 = User.withUsername("이름");
 ```
 ### 사용자와 연관된 여러 책임의 결합 
 ```
-User 를 데이터베이스에 저장하고 데이터를 다른 애플리케이션으로 전송할 때 사용할 클래스와
-스프링 시큐리티가 사용자를 이해할 수 있게 UserDetails 클래스를 만들어보자.
+User 를 데이터베이스에 저장하고 데이터를 다른 애플리케이션으로 전송할 때 사용할 기본 클래스와 
+스프링 시큐리티가 사용하는 UserDetails 클래스를 분리해서 구현할 수 있다. 
 
-보통 하나의 유저는 여러 개의 권한을 가지는 경우가 많다. 여기서는 간단히 하나의 권한을 가진
-User 엔티티를 구현했다.
+보통 하나의 유저는 여러 개의 권한을 가지는 경우가 많지만 간단히 하나의 권한을 가진 User 엔티티를 구현한다.
 
 애플리케이션 유지 관리성을 높이기 위해 두 가지 책임을 혼합하지 말고 분리해서 코드를 작성해야 한다.
 
 SecurityUser(UserDetails) 클래스는 스프링 시큐리티에서 사용자 세부 정보를 이해하는 클래스이고
 User 클래스는 엔티티 클래스로 데이터베이스에 매핑되는 클래스이다. (사용자)
 
-SecuritUser, User 참고
+SecurityUser, User 참고
 ```
 
 ## 스프링 시큐리티가 사용자를 관리하는 방법 지정
@@ -118,8 +119,7 @@ SecuritUser, User 참고
 
 loadUserByUserame(String username) 하나의 메서드를 가진 인터페이스.
 
-사용자 이름으로 주어진 이름을 가진 사용자의 UserDetails 정보를 시큐리티에서 얻는다.
-인자로 받는 사용자 이름은 고유하다고 간주된다.
+사용자 이름으로 주어진 이름을 가진 사용자의 UserDetails 정보를 시큐리티에서 얻는다. 인자로 받는 사용자 이름은 고유하다고 간주된다.
 ```
 ```
 * UserDetailsService 계약 구현
@@ -129,14 +129,12 @@ InMemoryUserDetailsService, ProjectConfig 참고
 ```
 * UserDetailsManager 계약 구현
 
-UserDetailsManager 는 UserDetailsService 의 확장팩이다 유저 생성 변경 삭제 중복네임 찾기 기능이 
-추가되어 있다.
+UserDetailsManager 는 UserDetailsService 의 확장팩이다 유저 생성 변경 삭제 중복네임 찾기 기능이 추가되어 있다.
 ```
 
 ### 사용자 관리에 JdbcUserDetailsManager 이용
 ```
-JdbcUserDetailsManger 는 SQL 데이터베이스에 저장된 사용자를 관리하며 JDBC 를 통해서 데이터베이스에
-직접 연결한다.
+JdbcUserDetailsManger 는 SQL 데이터베이스에 저장된 사용자를 관리하며 JDBC 를 통해서 데이터베이스에 직접 연결한다.
 
 인증공급자가 JdbcUserDetailsManger 를 호출하면 사용자 이름으로 데이터베이스에서 사용자 값을 가지고 온다.
 사용자가 발견되면 암호 인코더는 사용자가 제공한 암호가 데이터베이스에 있는 암호와 일치하는지 확인한다. 88p
