@@ -1,6 +1,6 @@
 # OAuth 2 : 권한 부여 서버 구현하기
 
-스프링 시큐리티에서 OAuth 2 프레임 워크의 구성 요소를 맞춤 구현 해보기! 
+스프링 시큐리티에서 OAuth 2 프레임 워크의 구성 요소를 직접 구현 한다!
 
 권한 부여 서버는 OAuth 2 아키텍처에서 작동하는 구성요소 중 하나로써 사용자를 인증하고 **클라이언트** 에 토큰을 제공하는 역할을 한다.
 
@@ -37,28 +37,21 @@ https://docs.spring.io/spring-security/reference/reactive/oauth2/resource-server
 https://www.appsdeveloperblog.com/spring-authorization-server-tutorial/
 https://www.baeldung.com/spring-security-oauth-auth-server
 ```
+#### + 스프링 시큐리티 인가 서버 샘플 
+
+스프링 스큐리티에서 인가 서버 샘플을 추가했다. https://github.com/spring-projects/spring-authorization-server/tree/main/samples 참고
+
+인가 서버 샘플을 클론 코딩하면서 필요한 설명을 애플리케이션에 기술한다. authorization-server-sample 참고 
 
 ## 맞춤형 권한 부여 서버 만들기
 
 OAuth 2 에서 가장 중요한 구성 요소는 액세스 토큰을 발행하는 권한 부여 서버다.  
 
-ex 13 auth-server 참고 
-### 권한 부여 서버 의존성 추가 및 구성 설정 하기
+### config 
 
-```
-* 권한 부여 서버 xml 의존성 추가
 
-<dependency>
-<groupId>org.springframework.security</groupId>
-<artifactId>spring-security-oauth2-authorization-server</artifactId>
-<version>0.2.2</version>
-</dependency>
 
-기본적으로 스프링 스타터에서 받을 수있는 web, security 에 더해서 추가해야하는 의존성.
 
-spring.port=8000 
-권한 부여 서버에서 사용할 포트를 따로 만들어준다.
-```
 
 ### 권한 부여 서버 자바 설정 만들기 
 
