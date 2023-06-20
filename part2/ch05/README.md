@@ -30,17 +30,17 @@ getDetails() // 시스템 요청에 대한 추가 세부 정보 제공
 isAuthenticated() // 인증됐거나 인증 프로세스가 진행중을 나타낸다.
 ```
 
-### 맞춤형 인증 논리 메서드 설명 
+### 맞춤형 인증 논리 구현  
 
-공급자가 인증 논리를 정의하려면 Authenticaiton 을 인자로 가지고 있는 authenticate(), supports() 메서드를 구현해야 한다.
+공급자가 인증 논리를 정의하려면 Authenticaiton 을 인자로 가지고 있는 authenticate(), supports() 메서드를 구현한다.
 
 ```
-* authenticatie() 메서드 구현 방법
+* authenticatie() 메서드 구현
 
 인증에 실패하면 메서드는 AuthenticationException 을 던진다.
 
-인증 공급자 구현에서 지원되지 않는 인증 객체를 받으면 null 을 반환한다. 
-(이렇게 하면 HTTP 필터 수준에서 분리된 여러 Authentication 형식을 사용할 가능성이 생긴다. 9 장에서 설명)
+메서드가 현재 AuthenticationProvider 구현에서 지원되지 않는 인증 객체를 받으면 null 값을 반환한다.
+118 p 참고 
 
 인증에 성공하면 인증된 객체를 나타내는 Authentication 인스턴스를 반환한다 반환할 때는 
 isAuthneticated() 메서드를 true 로 반환하며 인증 엔티티의 필수 세부정보가 포함된다. 
@@ -53,8 +53,7 @@ isAuthneticated() 메서드를 true 로 반환하며 인증 엔티티의 필수 
 인증 관리자는 인증 공급자를 호출할 때 supports 메서드를 호출해서 인증 공급자가 인증을 검증할 수 있는지
 체크한다.
 
-쉽게 말해서 이중으로 출입문을 세우는 것임 공급자가 인증 논리를 검증하기 전 관리자는 인증을 지원하는지 
-확인하고 공급자에게 인증을 위임하는 것이다.
+공급자가 인증 논리를 검증하기 전 관리자는 인증을 지원하는지 확인하고 공급자에게 인증을 위임한다.
 
 공급자가 Authentication 객체로 제공된 형식을 지원하면 true 를 반환. 공급자가 인증을 지원하더라도 
 authenticate() 메서드에 null 값을 반환해서 요청을 거부할 수도 있다.
@@ -88,7 +87,7 @@ Authenticaiton 인터페이스의 구현체 중 하나인 UsernamePasswordAuthen
 
 ex5 CustomAuthenticationProvider 참고
 
-인증에 성공하면 AuthenticationProvider 는 요청 세부정보를 포함하는 Authentication 을 '인증됨'으로
+인증에 성공하면 앞서 설명했듯 AuthenticationProvider 는 요청 세부정보를 포함하는 Authentication 을 '인증됨'으로
 표시하고 반환한다.
 ```
 ```
@@ -102,13 +101,11 @@ ex5 CustomAuthenticationProvider, CustomAuthenticationManager 참고 양방향 �
 
 ## SecurityContext 이용
 
-인증 프로세스가 끝난 후 인증된 엔티티의 세부 정보가 필요할 수 있다. 인증된 사용자의 이름이나 권한을
+인증 프로세스가 끝난 후 인증된 엔티티의 세부 정보가 필요할 수 있다. 인증된 사용자의 이름이나 권한을 다른 애플리케이션 로직에서 참조해야 되는 경우
 
-다른 애플리케이션 로직에서 참조해야 되는 경우
+인증이 성공한 후 인증 필터는 인증된 엔티티의 세부 정보를 보안 컨텍스트에 저장한다. 컨트롤러는 필요할 때 세부 정보에 접근할 수 있다.
 
-인증이 성공한 후 인증 필터는 인증된 엔티티의 세부 정보를 보안 컨텍스트에 저장한다. 컨트롤러는 필요할 때
-
-세부 정보에 접근할 수 있다.
+SecurityContext 는 Authentication 객체를 저장한다. 
 
 ### 보안 컨텍스트를 이용한 보유 전략 이용 MODE_THREDLOCAL
 ```
