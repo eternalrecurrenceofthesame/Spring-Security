@@ -18,7 +18,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 
 import javax.sql.DataSource;
-//@Configuration
+
+@EnableAsync
+@Configuration
 public class ProjectConfig {
 
 
