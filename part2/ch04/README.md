@@ -74,12 +74,25 @@ DelegatingPasswordEncoder 는 특정 애플리케이션 버전부터 인코딩 �
 기존 자격 증명을 변경하기 쉽지 않을 때 DelegatingPasswordEncoder 를 사용하면 된다. 103p
 
 ```
-Delegating 인코더는 각 인코더 구현체의 인스턴스에 접두사를 이용해서 맵으로 저장하고 
-접두사에 따라 필요한 인코더 구현체를 호출해서 사용하는 일종의 파사드 역할을 수행할 수 있다.
+Delegating 인코더는 각 인코더 구현체의 인스턴스의 접두사를 이용해서 맵으로 저장하고 데이터베이스에 인코딩된 
+패스워드의 접두사에 따라 필요한 인코더 구현체를 호출해서 사용하는 일종의 파사드 역할을 수행할 수 있다.
 
-ex) 접두사 {bcrypt} 가 있는 암호를 지정하고 matches() 메서드를 호출하면 BCryptPasswordEncoder 에 위임된다.
+ @Bean
+    public PasswordEncoder passwordEncoder(){
 
-ex04 ProjectConfig 참고 
+        Map<String, PasswordEncoder> encoders = new HashMap<>();
+
+        encoders.put("noop", NoOpPasswordEncoder.getInstance());
+        encoders.put("bcrypt", new BCryptPasswordEncoder());
+        encoders.put("scrypt", new SCryptPasswordEncoder());
+
+        return new DelegatingPasswordEncoder("bcrypt", encoders);
+        
+    }
+
+이런식으로 bcrypt 를 접두사로 사용하고 인코딩을 하면 BCryptPasswordEncoder 가 적용된다.
+
+https://moonsiri.tistory.com/138 구현 예시 참고 
 ```
 
 ### DelegatingPasswordEncoder 의 인스턴스 구현하기
