@@ -106,7 +106,10 @@ ex5 CustomAuthenticationProvider, CustomAuthenticationManager 참고 양방향 �
 인증에 성공하면 인증 필터는 인증된 엔티티의 세부 정보를 보안 컨텍스트에 저장한다. 컨트롤러는 필요할 때 세부 정보에 접근할 수 있다.
 
 SecurityContextHolder 는 SecurityContext 를 관리하며 SecurityContext 의 주 책임은 Authentication 객체를 저장하는 것이다.
-
+```
+스프링 시큐리티에서 세션값이 사용되는 메커니즘에 대해서는 아래 내용을 참고한다.
+https://github.com/eternalrecurrenceofthesame/Spring/blob/main/session/README.md 
+```
 ### 보안 컨텍스트를 이용한 보유 전략 이용 MODE_THREDLOCAL
 ```
 각 스레드가 보안 컨텍스트에 각자의 세부 정보를 저장하는 전략. 스프링 시큐리티가 보안 컨텍스트를 관리하는
