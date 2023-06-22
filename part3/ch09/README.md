@@ -2,15 +2,17 @@
 
 ## 스프링 시큐리티 아키텍처의 필터 구현
 ```
-인증 필터는 요청을 가로채고 인증 책임을 권한 부여 필터에 위임한다. 인증 이전에 특정 논리를 실행하고 싶다면 인증 필터 앞에 
-필터를 추가하면 된다.
+AuthenticationFilter 는 요청을 가로채고 인증 책임을 AuthorizationFilter 에 위임한다. 인증 이전에 특정 논리를 실행하고 싶다면
+인증 필터 앞에 필터를 추가하면 된다.
+
+인증 과정의 필터와 권한 부여 과정의 필터는 서로 구분되어 있다.
+https://github.com/eternalrecurrenceofthesame/Spring-security-in-action/tree/main/part3/ch07 참고 
 
 필터를 추가할 때 여러 필터가 같은 위치에 있으면 필터가 호출되는 순서는 정해지지 않는다. 224p
 
-참고로 formLogin 을 사용하면 UsernamePasswordAuthenticationFilter 가 적용되고
+참고로 Authentication 과정에서 formLogin 을 사용하면 UsernamePasswordAuthenticationFilter 가 적용되고
 OAuth2Login 을 사용하면 OAuth2LoginAuthenticatonFilter 가 적용된다. 두 개를 같이 사용할 수 있다. 
 ```
-
 ### 체인에서 인증 필터(기존 필터) 앞에 필터 추가하기
 ```
 * Before 맞춤형 필터 시나리오 예제
@@ -20,13 +22,12 @@ OAuth2Login 을 사용하면 OAuth2LoginAuthenticatonFilter 가 적용된다. �
 
 ex09 before(기존 필터 앞이라는 의미!) 참고 필터를 만들고, 필터체인으로 등록! 
 ```
-
 ### 체인에서 인증필터(기존 필터) 뒤에 필터 추가하기
 ```
 * After 맞춤형 필터 시나리오 예제
 
 기존 BasicAuthenticationFilter 뒤에 맞춤형 필터를 추가하자! 인증 필터 뒤에 성공한 인증 이벤트를 모두 기록하는 필터를 추가해보겠음.
-인증 필터를 통과하면 인증 성공 이벤가 발생했다는 가정하에 기록한다.
+인증 필터를 통과하면 인증 성공 이벤트가 발생했다는 가정하에 기록한다.
 
 ex09 after(기존 필터 뒤라는 의미!) 참고
 ```
