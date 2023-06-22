@@ -71,19 +71,21 @@ http.authorizeRequests()
 
             ("/a/*/c") 
 
-** 연산자를 이용한 패턴은 ** 수에 제한이 없다. /a/ **/b/ /c/ /d/ /e/** /c 여러 조합이 가능
-* 연산자를 이용한 패턴은 * 에 어느것이나 올 수 있지만 하나만 올 수 있다.             
+** 연산자를 이용한 패턴은 ** 수에 제한이 없다.
+/a/**/c == /a/b/d/c , /a/b/c/d/e/c  패턴 내에 제한없이 올 수 있다
+
+* 연산자를 이용한 패턴은 * 에 어느것이나 올 수 있지만 하나만 올 수 있다.
+/a/*/c == /a/b/c , /a/d/c  어느 것이나 가능은 한데 패턴 하나만 추가 가능 
 ```
 ```
 * 특정 숫자만 허용하게 권한 부여 필터를 구성하기
 
 @GetMapping("/product/{code}") // Get 으로 어떤 인자든 받는 엔드포인트
-public String productCode(@PathVariable String code){
-       return code;}
+public String productCode(@PathVariable String code){return code;}
 
 // 권한 부여 필터 
 http.authorizeRequests()
-.mvcMatchers("/product/{code:^[0-9]*$") // 길이 관계 없이 숫자만 나타내는 정규식
+.mvcMatchers("/product/{code:^[0-9]*$}") // 길이 관계 없이 숫자만 나타내는 정규식
 .permitAll()
 .anyRequest().denyAll();
 
@@ -93,7 +95,6 @@ http.authorizeRequests()
 regex 는 regexMatchers 를 사용하자.
 
 ```
-
 ### 앤트 선택기로 권한 부여 필터 설정하기 
 
 앤트 선택기와 MVC 선택기의 차이점을 알고 사용하자! 보통 MVC 선택기가 권장된다.
@@ -119,6 +120,11 @@ antMatchers(String patterns)
 antMatchers(HttpMethod method)  "/**" 와 같은 의미로 경로 관계 없이 특정 HTTP 방식 지정
 ```
 
+참고로 스프링 시큐리티 7.0 버전부터는 SecurityFilterChain 구성이 람다식만 사용하도록 전면 개정되면서 위에서 설명한 많은 메서드들이
+
+사라졌다!! (오히려 더 간단해짐) 관련 내용은 아래 링크를 참고한다.
+
+https://docs.spring.io/spring-security/reference/migration-7/configuration.html
 
 ### 정규식 선택기로 권한 부여 필터 설정하기
 ```
@@ -163,6 +169,8 @@ localhost:8080/email/jaime@exmaple.com
 * 더 복잡한 예제
 
 정규식 선택기는 많은 경로 패턴과 여러 경로 변수의 값을 참조할 수도 있다.
+
+@GetMapping("/viedo/{country}/{language}")
 
 http.authorizeRequests()
       .regexMatchers(".*/(us|uk|ca)+/(en|fr).*")
