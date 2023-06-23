@@ -213,7 +213,6 @@ ex 20 ex1 CustomAuthenticationProvider, AuthenticationTests 참고
 * fromLogin() 양식 테스트 ex 3, FormLogin  참고
 
 html formLogin 을 사용하면 로그인 자격 증명의 성공,실패에 따라 맞춤형 핸들러를 적용할 수 있다 
-!! 이 테스트는 교재 내용대로 해도 진행이 되지 않는다 !! 
 ```
 ## 6. CSRF 구성 테스트
 
