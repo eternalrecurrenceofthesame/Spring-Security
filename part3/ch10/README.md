@@ -126,66 +126,108 @@ CsrfFilter -> CustomRepository -> JpaTokenRepository -> MySQL //
 ```
 
 ## CORS(교차 출처 리소스 공유) 이용
-
-ch10 cors 참고 
-
-### CORS 작동 방식 
-
 ```
-CORS 를 이용하면 애플리케이션이 요청을 허용할 도메인, 그리고 공유할 수 있는 세부정보를 지정할 수 있다.
-CORS 는 HTTP 헤더 기반으로 작동한다.
-(기본적으로 서버에서 제공하는 엔드포인트 외의 공유값 지정?? API 통신 265P)
+브라우저는 사이트가 로드된 도메인 이외의 도메인에 대한 요청을 허용하지 않는다 example.com 에서 사이트를 열었다면 브라우저는
+이 사이트에서 api.example.com 에 요청하는 것을 허용하지 않는다. 266 p 그림 참고 
 
-Access-Control-Allow-Origin : 도메인의 리소스에 접근할 수 있는 외부 도메인(원본) 을 지정한다.
-Access-Control-Allow-Methods : 다른 도메인에 대한 접근을 허용하지만 특정 방식만 허용하고 싶을 때 사용한다 ex) GET 만 허용
-Access-Control-Allow-Headers : 특정 요청에 이용할 수 있는 헤더에 제한을 추가한다 267p
+예를 들면 example.com 이라는 웹 사이트에서 (프론트 엔드 애플리케이션을 가정) API 서버의 api.example.com 을 호출하려고 할 때
+CORS 설정이 허용되어 있지 않다면 접근이 거부된다.
+
+CORS 를 사용하면 애플리케이션이 요청을 허용할 도메인, 그리고 공유할 수 잇는 세부 정보를 지정할 수 있다. CORS 는 HTTP 헤더를
+기반으로 작동한다.
 ```
 ```
-* 지정되지 않은 도메인 호출하기
+* 주요 헤더
 
-GET("/hello") 로 자바스크립트의 지정되지 않은 도메인이 있는 html 을 호출하면 엔드포인트는 호출되지만 응답은 수락되지 않는다. 
+Access-Control-Allow-Origin : 도메인의 리소스에 접근할 수 있는 외부 도메인을 지정한다.
+(로드된 도메인 이외의 도메인에 대한 요청을 지정한다는 의미)
 
-(127.0.0.1 과 localhost 는 같은 호스트를 나타내지만 브라우저는 문자열이 다르므로 서로 다른 도메인으로 인식한다 // main.html 참고)
-(Access-Control-Allow-Origin HTTP 헤더가 없어서 응답이 수락되지 않았다는 오류가 나옴)
-
-브라우저는 CORS 관련 헤더를 설정하지 않으면 응답을 표시하지 않는다.
-하지만 html 에서 호출한 POST 엔드포인트 요청 로그는 애플리케이션에서 호출된다.
-
-CORS 헤더를 지정하지 않아도 엔드포인트가 호출되는 이유는 CORS 는 브라우저에 관한 것이고
-엔드포인트를 보호하는 방법이 아니기 때문이다.
-
-CORS 는 엄격한 제약 조건을 완화하도록 도와주는 기능으로 제한이 적용되더라도 일부 상황에서는 
-엔드포인트를 호출할 수 있다.
-
-브라우저는 요청을 허용해야하는지 테스트하기위해 먼저 HTTP OPTIONS 방식을 호출하는 경우가 있다
-이 테스트 요청을 사전 요청이라고하며 이 요청이 실패하면 브라우저는 원래 요청을 수락하지 않는다. 270p
-
-예제에서는 GET 으로 HTML 을 호출하면 자바스크립트가 POST("test") 를 호출해서 Hello 를 출력해야 하지만 
-브라우저가 응답을 수락하지 않아서 빈 화면만 나옴
-(OPTIONS 로 테스트 요청 했는데 실패했기 때문에 엔드포인트는 호출되지만 원래 요청을 수락하지 않게됨)
-
-결론: CORS 는 브라우저에 관한 것, 엔드포인트를 보호하는 방법이 아니다. 
-CORS 는 허용하는 출처의 도메인만 브라우저의 페이지에서 수행할 수 있다
+Access-Control-Allow-Methods : 특정 http 방식만 허용하고 싶을 때 지정할 수 있다.
+Access-Control-Allow-Headers : 특정 요청에 이용할 수 있는 헤더에 제한을 추가한다.
 ```
+### CORS 실습 애플리케이션 구현
+```
+html 에서 자바 스크립트로 api 를 호출하는 시나리오를 구현한다. 이때 자바스크립트가 있는 html 에서 CORS 테스트를
+위해 localhost 도메인을 사용하지 않고 127.0.0.1 IP 주소로 api 를 호출하게 한다. 
 
-### @CrossOrigin 애노테이션으로 CORS 정책 적용하기
+이렇게 하는 이유는 브라우저는 같은 호스트를 나타내더라도 문자열이 다르면 서로 다른 도메인으로 인식하기 때문에
+CORS 를 요청을 테스트 할 수 있다.
+```
+```
+* 실습 진행
 
-@CrossOrigin 애노테이션을 이용해서 다른 도메인에서의 요청을 허용하도록 CORS 를 구성해보자!
+리소스 애플리케이션에서 CORS 설정을 하지 않아도 브라우저에서 localhost:8080 을 호출하면 main.html 에서 로드된 도메인
+이외의 127.0.0.1:8080/test 는 호출된다.
+
+로드된 도메인(localhost) 이 아닌 127.0.0.1:8080/test 을 API 로 호출하면 엔드포인트는 호출되지만 실제 자바스크립트
+호출에대한 오류가 콘솔에 찍히게되고 리소스 응답은 표시되지 않는다.
+
+자바스크립트 오류가 발생하는 이유는 로드된 도메인 이외의 도메인 값으로 요청을 호출했기 때문이다. 오류 메시지에는
+Access-Control-Allow-Origin HTTP 헤더가 없어서 응답이 수락되지 않았다고 나오는데
+
+localhost:8080 도메인의 리소스에 접근할 수 있는 127.0.0.1:8080 외부 도메인 설정을 애플리케이션에서 하지 않았기 때문이다. 
+
+이때 중요한 점은 브라우저에서 CORS 보호가 적용되더라도 자바스크립트에서 실제 API 엔드포인트를 호출하고 호출 됐다는 것이다.
+즉 CORS 제한이 적용되더라도 일부 상황에서는 엔드포인트가 호출된다.
+
+하지만 브라우저는 응답에 출처가 지정되지 않으면 응답을 수락하지 않는다. CORS 메커니즘은 결국 브라우저에 관한 것이며
+엔드포인트는 보호되지 않는다. 
+```
+### @CrossOrigin 애노테인셔으로 CORS 정책 적용하기
+
+로드된 도메인이 아닌 요청을 브라우저에서 수락하게 하기 
 
 ```
-@PostMapping("/test")
-@ResponseBody  // Controller + ResponseBody = RestController
-@CrossOrigin("http://localhost:8080") // localhost:8080 출처에 대한 교차 출처 요청을 허용!
+* 엔드포인트에 적용
+
+    /**
+     * 자바 스크립트에서 호출하는 API 를 가정한다.
+     */
+    @PostMapping("/test")
+    @ResponseBody
+    @CrossOrigin("http://localhost:8080") // 교차 출처 요청을 허용한다.
     public String test(){
-        logger.info("테스트 요청");
+        logger.info("Test API method Called");
         return "Hello";
     }
 
-@CrossOrigin({"example.com", "example.org"}) 와 같이 여러 값을 배열로 지정할 수도 있다. 272p
-```
-```
-* config 로 CORS 적용하기
 
-@CrossOrigin 애노테이션이 편리할 수 있지만 일일이 하나하나씩 다 지정해야됨..
-필터체인을 이용해서 구성을 한곳에서 정의할 수도 있다. ex10 cors config 참고 
+@CrossOrigin({"example.com", "example.org"}) 로 여러 개 지정할 수 있으며
+allowedHeaders 특성과 methods 특성으로 허용되는 헤더와 메서드를 지정할 수도 있다.
+
+출처와 헤더에 * 를 이용해서 모든 출처나 헤더를 지정할 수 도 있지만 이렇게 하면 
+XSS 에 노출되고 DDos 공격에 취약해질 수 있다.
 ```
+@CrossOrigin 으로 직접 규칙을 지정하면 규칙이 투명해지는 장점이 있지만 코드가 장황해지고  반복되는 코드가 많아지는 단점도 있다. 
+
+```
+* 자바 시큐리티 설정으로 cors 적용하기
+
+    /**
+     * 모든 요청을 허용한다. POST 를 API 요청으로 사용하기 위해 CSRF disable 설정
+     */
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.cors(c -> {
+            CorsConfigurationSource source = request -> {
+                CorsConfiguration config = new CorsConfiguration();
+                config.setAllowedOrigins(
+                        List.of("example.com", "example.org"));
+                config.setAllowedMethods(
+                        List.of("GET", "POST", "PUT", "DELETE"));
+                
+                return config;
+            };
+        });
+      
+        http.csrf(c -> c.disable());
+
+        http.authorizeHttpRequests(a ->
+                a.anyRequest().permitAll());
+
+        return http.build();
+    }
+```
+
+전체적인 구성을 보고 싶다면 cors-ex 를 참고한다. 
+
