@@ -215,11 +215,9 @@ ex 20 ex1 CustomAuthenticationProvider, AuthenticationTests 참고
 html formLogin 을 사용하면 로그인 자격 증명의 성공,실패에 따라 맞춤형 핸들러를 적용할 수 있다 
 !! 이 테스트는 교재 내용대로 해도 진행이 되지 않는다 !! 
 ```
-
 ## 6. CSRF 구성 테스트
 
 GET 요청 이외의 다른 요청을 테스트해야 할 때 CSRF 보호가 작동하는지 테스트 해보기! 
-
 ```
 * 테스트 예시 post 요청에는 csrf 토큰이 필요하다.
 
@@ -231,9 +229,65 @@ mvc.perform(post("/hello").with(csrf()))
 ```
 ## 7. CORS 구성 테스트
 
+CORS 에 대한 자세한 내용은 아래 링크를 참고한다. 
 
+https://github.com/eternalrecurrenceofthesame/Spring-security-in-action/tree/main/part3/ch10
+
+```
+* 자바 설정
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.cors(c -> {
+            CorsConfigurationSource source = request -> {
+                CorsConfiguration config = new CorsConfiguration();
+                config.setAllowedOrigins(
+                        List.of("example.com", "example.org"));
+                config.setAllowedMethods(
+                        List.of("GET", "POST", "PUT", "DELETE"));
+
+                return config;
+            };
+        });
+
+        http.csrf(c -> c.disable());
+
+        http.authorizeHttpRequests(a ->
+                a.anyRequest().permitAll());
+
+        return http.build();
+    }
+```
+```
+* 테스트
+
+
+    @Test
+    @DisplayName("Test CORS configuration for /test endpoint")
+    public void testCORSForTestEndpoint() throws Exception {
+        mvc.perform(options("/test")
+                .header("Access-Control-Request-Method", "POST")
+                .header("Origin", "http://www.example.com")
+        )
+        .andExpect(header().exists("Access-Control-Allow-Origin"))
+        .andExpect(header().string("Access-Control-Allow-Origin", "*"))
+        .andExpect(header().exists("Access-Control-Allow-Methods"))
+        .andExpect(header().string("Access-Control-Allow-Methods", "POST"))
+        .andExpect(status().isOk());
+    }
+
+```
 ## 8. 리액티브 스프링 시큐리티 구현 테스트 예시
+```
+* 테스트 엔드포인트
 
+@RestController
+
+    @GetMapping("/hello")
+    public Mono<String> hello() {
+        return Mono.just("Hello!");
+    }
+```
 ```
 * 리액티브 구현 예시
 
@@ -261,7 +315,6 @@ client.mutateWith(mockUser()) // GET 요청 실행 전 모의 사용자를 이�
 .get().uri("/hello").exchange()
 .expectStatus().isOk();
 }
-
 
 client.mutateWith(csrf()) // POST 호출에 대한 CSRF 보호 테스트 
 .post().uri("/hello").exchange()
