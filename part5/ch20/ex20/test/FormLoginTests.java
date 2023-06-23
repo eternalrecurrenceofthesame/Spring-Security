@@ -34,7 +34,7 @@ public class FormLoginTests {
         mvc. perform(formLogin().user("mary").password("12345"))
                 .andExpect(redirectedUrl("/error"))
                 .andExpect(status().isFound())
-                .andExpect(unauthenticated());
+                .andExpect(authenticated());
     }
 
     @DisplayName("권한 있는 유저")
