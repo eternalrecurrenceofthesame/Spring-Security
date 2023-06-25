@@ -32,7 +32,7 @@
 ```
 * 전역 메서드 보안 규칙을 정의하는 3 가지 방법
 
-사전/사후 권한 부여 애노테이션 지정(@EnableGolbalMethodSecurity)
+사전/사후 권한 부여 애노테이션을 시큐리티 설정 클래스에 지정(@EnableGolbalMethodSecurity)
 JSR 250 애노테이션(@RolesAllowed)
 @Secured 애노테이션
 
