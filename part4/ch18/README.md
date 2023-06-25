@@ -198,4 +198,18 @@ https://github.com/eternalrecurrenceofthesame/Spring-security-in-Action/tree/mai
 
 ResourceServerConfig, WorkoutRepository 참고 
 ```
+### 리소스 서버 yml  설정하기
+```
+yml 설정 값으로는 JwtAuthConverter 에서 사용할 JwtAuthConverterProperties 와 자바 설정으로 구성하는 대신
+인가 서버의 발행자 주소 및 서명키 설정을 구현한다. 
+
+yml 참고 
+```
+#### + schema.sql, data.sql 
+```
+스프링 부트 3.0 기준 schema 는 제대로 작동하지만 data 는 제대로 작동하지 않기 때문에 data.sql 을 사용하는 대신
+직접 데이터베이스에 값을 쿼리해야 한다.
+
+data.sql 쿼리 참고 
+```
 ### 리소스 서버 + 권한부여 서버 테스트하기 
