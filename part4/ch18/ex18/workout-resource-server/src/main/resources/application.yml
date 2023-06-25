@@ -1,0 +1,44 @@
+# 포트 설정
+server:
+  port: 9090
+  servlet:
+    context-path: /api # 글로벌 패스 지정
+
+# 시큐리티 설정
+spring:
+  application:
+    name: workout-resource
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/WorkoutKeycloak # 발행자 주소
+          jwk-set-uri: http://localhost:8080/realms/WorkoutKeycloak/protocol/openid-connect/certs # jwk 서명 키를 얻는 주소
+
+# JwtAuthenticationConvert 설정. 컨버터는 토큰을 JwtAuthenticationToken(JWT, Authorities) 으로 만드는 역할을 한다.
+jwt:
+  auth:
+    converter:
+      resource-id: fitnessapp # 클라이언트 아이디
+      principal-attribute: preferred_username # 사용자 이름
+
+
+# 데이터베이스 설정
+spring.datasource:
+    url: jdbc:mysql://localhost:3306/resource_server?serverTimezone=UTC&characterEncoding=UTF-8
+    username: root
+    password: 12345
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+spring.jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
+
+
+logging.level:
+  org.hibernate.sql: DEBUG # 로그 레벨을 디버그로 설정해서 SQL 문과 실제 값을 출력한다. 상용환경에서는 지양한다.
