@@ -213,3 +213,38 @@ yml 참고
 data.sql 쿼리 참고 
 ```
 ### 리소스 서버 + 권한부여 서버 테스트하기 
+```
+* 사용자가 자기 운동 기록만 가져올 수 있는지 테스트
+
+curl -XPOST "http://localhost:8080/realms/master/protocol/openid-connect/token" \
+-H "Content-Type: application/x-www-form-urlencoded" \
+--data-urlencode "grant_type=password" \
+--data-urlencode "username=bill" \
+--data-urlencode "password=12345" \
+--data-urlencode "scope=fitnessapp" \
+--data-urlencode "client_id=fitnessapp" \
+
+curl 'localhost:9090/api/workout/' \
+-H 'Authorization: Bearer token...'
+
+bill 의 토큰을 받고 헤더 값으로 토큰을 요청하면 bill 의 리소스에 접근할 수 있다.
+rachel 로 바꿔서 시도해도 정상적으로 접근 가능!
+
+curl 대신 postman 을 사용하면 훨씬 편리하게 리소스를 확인할수 있다!! 
+```
+```
+* 관리자만 레코드를 삭제할 수 있는지 증명하기 
+
+curl -XPOST "http://localhost:8080/realms/master/protocol/openid-connect/token" \
+-H "Content-Type: application/x-www-form-urlencoded" \
+--data-urlencode "grant_type=password" \
+--data-urlencode "username=mary" \
+--data-urlencode "password=12345" \
+--data-urlencode "scope=fitnessapp" \
+--data-urlencode "client_id=fitnessapp" \
+
+curl -XDELETE 'localhost:9090/api/workout/2' \
+--header 'Authorization: Bearer token...'
+
+관리자 mary 로 토큰을 받고 rachel 의 운동 기록을 삭제한다. 
+```
