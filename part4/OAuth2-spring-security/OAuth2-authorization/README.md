@@ -46,12 +46,26 @@ OAuth 2 에서 가장 중요한 구성 요소는 액세스 토큰을 발행하�
 
 https://namu.wiki/w/%EC%95%84%ED%8C%8C%EC%B9%98%20%EB%9D%BC%EC%9D%B4%EC%84%A0%EC%8A%A4 참고 
 
+### 승인 그랜트 유형 구현하기 
+```
+* config 
+
+권한 부여서버는 Authentication(인증), Authorization(인가) 두 과정으로 나뉜다. 인증 설정은 formLogin 과 OAuth2Login 을 사용하고
+인증에 성공하면 커스텀 토큰을 만들어서 세션 값으로 클라이언트에 전달한다.
+
+토큰을 관리하기 위한 OAuth2AuthorizationService 를 주입 받아서 사용할 수 있다.
+토큰과 클라이언트 유형은 저장은 메모리 또는 데이터베이스에 JPA 를 사용해서 저장할 수 있다. jpa 패키지 참고 
+```
+
+
 ### config 
 ```
 * config 참고 
 
 권한부여 서버의 설정은 AuthorizationServer 설정과 Authentication 설정으로 나뉜다. 권한 부여 서버에서 인가 및 인증 정보에 대한 것을 담당한다. 
-(권한 부여 서버에서 로그인 및 회원가입에 관한 것을 관리한다고 생각하면 된다.)
+(권한 부여 서버에서 로그인 및 회원가입에 관한 것을 관리)
+
+
 ```
 ```
 * application.yml
