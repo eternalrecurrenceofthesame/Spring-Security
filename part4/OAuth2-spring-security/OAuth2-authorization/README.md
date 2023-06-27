@@ -47,25 +47,18 @@ OAuth 2 에서 가장 중요한 구성 요소는 액세스 토큰을 발행하�
 https://namu.wiki/w/%EC%95%84%ED%8C%8C%EC%B9%98%20%EB%9D%BC%EC%9D%B4%EC%84%A0%EC%8A%A4 참고 
 
 ### 승인 그랜트 유형 구현하기 
+
+#### 권한 부여 서버 설정
 ```
-* config 
+* cofnig 
 
 권한 부여서버는 Authentication(인증), Authorization(인가) 두 과정으로 나뉜다. 인증 설정은 formLogin 과 OAuth2Login 을 사용하고
-인증에 성공하면 커스텀 토큰을 만들어서 세션 값으로 클라이언트에 전달한다.
+인증에 성공하면 커스텀 토큰을 만들어서 세션 값으로 클라이언트 애플리케이션에 전달한다.
 
 토큰을 관리하기 위한 OAuth2AuthorizationService 를 주입 받아서 사용할 수 있다.
-토큰과 클라이언트 유형은 저장은 메모리 또는 데이터베이스에 JPA 를 사용해서 저장할 수 있다. jpa 패키지 참고 
-```
+토큰과 클라이언트 유형은 저장은 메모리 또는 데이터베이스에 JPA 를 사용해서 저장할 수 있다.
 
-
-### config 
-```
-* config 참고 
-
-권한부여 서버의 설정은 AuthorizationServer 설정과 Authentication 설정으로 나뉜다. 권한 부여 서버에서 인가 및 인증 정보에 대한 것을 담당한다. 
-(권한 부여 서버에서 로그인 및 회원가입에 관한 것을 관리)
-
-
+토큰 및 클라이언트 유형이 저장되는 데이터베이스 스키마 및 JPA 구현 내용은 jpa 패키지를 참고한다.
 ```
 ```
 * application.yml
@@ -73,31 +66,28 @@ https://namu.wiki/w/%EC%95%84%ED%8C%8C%EC%B9%98%20%EB%9D%BC%EC%9D%B4%EC%84%A0%EC
 권한부여 서버에서 사용할 포트 및 외부 소셜 로그인 정보(구글, GIT HUB) 를 구성한다. 
 
 OAuth 2 프레임워크의 메커니즘을 적용하기 위해 인가 서버, 클라이언트 서버, 리소스 서버 3 가지로 분리되며
-각각 다른 포트를 가지게 된다. 
-```
-###  jose
-```
-jose 패키지에는 서명키와 키 생성 유틸 클래스가 있다. 키생성에 대해서는 구체적으로 설명할 부분이 없다.
-샘플의 구현을 그대로 사용했다. 
-```
-### authentication
+각각 다른 포트를 가지게 된다.
 
-디바이스 그랜트 타입에서 사용할 인증 공급자와 인증 유형을 커스텀으로 구현한다.
+데이터베이스를 사용해서 토큰을 관리할 경우 데이터베이스 설정도 등록한다. 
+```
+#### jwt jwk 생성하기  
+```
+* jose
 
+jose 패키지에는 서명키와 키 생성 유틸 클래스가 있다. 키생성에 대해서는 구체적으로 설명할 부분이 없다. 샘플의 구현을 그대로 사용했다. 
 ```
-* 디바이스 그랜트 타입이란?
+#### federation
+```
+FederatedIdentityAuthenticationSuccessHandler
+- 외부 소셜 로그인에 성공하면 이 핸들러가 동작하고 세션에 필요한 값을 저장한다.
 
-웹 브라우저가 아닌 사물 인터넷 기기를 권한 부여 서버에서 인가할 때 사용하는 그랜트 유형으로 리소스 서버에 접근하는
-디바이스의 인가를 웹 브라우저에서 진행하고 디바이스에 리소스 서버에 접근할 수 있는 토큰을 부여하는 방식 
+FederatedIdentityIdTokenCustomizer
+- 커스텀 토큰을 생성한다.
 
-디바이스 그랜트 타입 대략적인 설명  
-https://pragmaticwebsecurity.com/img/articles/device-flow/deviceflow.png
+UserRepositoryOAuth2UserHandler
+- OAuth2 로그인 사용자 정보를 저장하는 클래스 
 ```
-### federation
-```
-인증 성공 핸들러 및 Authentication principal Customzier 클래스가 있다. 
-```
-### 인가 서버 구현의 전체적인 흐름 설명
+### 인가 서버 구현의 전체적인 흐름 설명 
 
 인가되지 않은 클라이언트가 리소스에 접근하면 인가 서버에서 제공하는 로그인 페이지로 이동된다. 로그인 페이지에서 사용자 인증(폼, 소셜 로그인) 에
 
@@ -112,12 +102,6 @@ https://pragmaticwebsecurity.com/img/articles/device-flow/deviceflow.png
 토큰을 생성할 때 인가 정보를 내장 데이터베이스에 저장할 수 있으며 인가 서버는 인가된 정보를 저장 및 삭제 조회할 수 있다. AuthorizationServerConfig 참고 
 
 토큰을 받은 클라이언트는 토큰을 사용해서 리소스 서버에 접근할 수 있게 된다! 
-
-```
-* 인가 정보를 JPA 를 사용해서 저장하는 방법
-
-https://docs.spring.io/spring-authorization-server/docs/current/reference/html/guides/how-to-jpa.html 참고
-```
 
 ## 기타 참고할 내용들 
 ```
@@ -189,4 +173,9 @@ The latter will be deprecated in future version of Spring Security.
 참고
 https://docs.spring.io/spring-security/reference/servlet/authorization/authorize-requests.html#servlet-authorization-filtersecurityinterceptor
 https://stackoverflow.com/questions/73089730/authorizerequests-vs-authorizehttprequestscustomizerauthorizehttprequestsc
+```
+```
+* 인가 정보를 JPA 를 사용해서 저장하는 방법
+
+https://docs.spring.io/spring-authorization-server/docs/current/reference/html/guides/how-to-jpa.html 참고
 ```
