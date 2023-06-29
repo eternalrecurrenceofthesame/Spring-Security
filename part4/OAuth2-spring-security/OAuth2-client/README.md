@@ -1,7 +1,26 @@
-# ClientRegistration
+# OAuth2: 클라이언트 서버 구현하기 
 
-ClientRegistration 은 등록된 클라이언트(인증 서버 ex 구글, 깃허브) 의 정보를 가지고 있다 
+스프링 시큐리티에서 제공하는 샘플로 OAuth 2 Client server 를 구현한다. 구현 순서대로 간단한 설명을 기술하며 구체적인  
 
+구현 및 컴포넌트는 애플리케이션 파일을 참고한다.
+
+```
+https://github.com/spring-projects/spring-authorization-server/tree/main/samples/demo-client 
+시큐리티에서 제공하는 샘플 모델  
+
+```
+## cofnig
+
+클라이언트 애플리케이션 전반적인 설정 
+```
+* SecurityConfig
+
+기본적인 시큐리티 설정을 만든다. 허용할 수 있는 요청과 인증이 필요한 요청, 로그아웃 핸들러로 구성된다.
+```
+```
+* WebClientConfig
+
+```
 ## ClientRegistration 세부 구성
 
 ```
