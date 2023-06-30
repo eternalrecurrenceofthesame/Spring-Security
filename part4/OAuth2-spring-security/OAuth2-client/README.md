@@ -27,15 +27,17 @@ https://namu.wiki/w/%EC%95%84%ED%8C%8C%EC%B9%98%20%EB%9D%BC%EC%9D%B4%EC%84%A0%EC
 라이브러리로써 ServletOAuth2AuthorizedClientExchangeFilterFunction 및 provider 설정을 추가한다.
 
 이 설정값은 OAuth2AuthorizedClient 클래스로 액세스 토큰값을 가져와서 디바이스 그랜트 유형 요청에 필요한 토큰 attributes 를
-modifies 할 때 사용된다.
+modifies 할 때 사용된다. - API 계층 참고 
 ```
 ```
 * application.yml
 
-클라이언트 유형 및 애플리케이션 전반적인 설정 클라이언트 유형은 권한 부여 서버에 액세스 토큰을 요청할 때, 리소스 서버 API 를 호출하기 위한
-토큰 값을 가져올 때 사용된다
+클라이언트 유형 및 애플리케이션 전반적인 설정 클라이언트 유형은 권한 부여 서버에 액세스 토큰을 요청할 때, 리소스 서버 API 를
+호출하기 위한 토큰 값을 가져올 때 사용된다
 ```
 ## authoriztaion
+
+이 패키지의 authoriztaion 설정은 디바이스 그랜트 유형시 사용된다.
 ```
 DeviceCodeOAuth2AuthorizedClientProvider 는 클라이언트 애플리케이션에서 WebClient 로 리소스 API 를 호출할 때 적용되는데 
 승인 코드 그랜트 유형이나 패스워드 그랜트 유형이 아닌 디바이스 코드 그랜트 유형일때 적용된다.
@@ -43,7 +45,6 @@ DeviceCodeOAuth2AuthorizedClientProvider 는 클라이언트 애플리케이션�
 액세스 토큰이 만료된 경우 리프레쉬 토큰을 사용해서 새 토큰을 받아오고 토큰이 모두 만료되었다면 새로운 토큰 값을 요청하는
 공급자를 구현한다.
 ```
-
 
 # 스프링 시큐리티 클라이언트 래퍼런스
 
