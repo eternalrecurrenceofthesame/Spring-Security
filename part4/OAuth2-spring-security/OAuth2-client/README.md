@@ -51,9 +51,16 @@ DeviceCodeOAuth2AuthorizedClientProvider 는 클라이언트 애플리케이션�
 ```
 ## 클라이언트 서버가 리소스에 접근하는 시나리오
 
-OAuth 2 인증 방식을 스프링 시큐리티로 구현한 시나리오를 정리한다. 이 내용은 권한 부여 서버 챕터의 내용과 똑같은 내용이다.
+OAuth 2 인증 방식을 스프링 시큐리티로 구현한 시나리오를 정리하고 간단하게 flow 흐름을 그림으로 소개한다.
+
+참고로 이 내용은 권한 부여 서버 챕터의 내용과 똑같은 내용이다.
 
 ### 승인 코드 그랜트 유형
+
+ ![code-flow](./codeflow_backend.png) 
+
+그림 출처: https://pragmaticwebsecurity.com/articles/oauthoidc/from-implicit-to-pkce.html
+
 ```
 권한이 없는 브라우저(사용자) 가 클라이언트 애플리케이션에 접근하면 클라이언트 애플리케이션은 브라우저를 권한 부여 서버의
 로그인 페이지로 리다이렉트 시킨다.
@@ -92,6 +99,11 @@ OAuth 2 인증 방식을 스프링 시큐리티로 구현한 시나리오를 정
 이 클라이언트 인스턴스는 ServletOAuth2AuthorizedClientExchangeFilterFunction 필터를 통해서 관리할 수 있다. 
 ```
 ## 디바이스 코드 그랜트 유형
+
+ ![device-flow](./deviceflow.png) 
+
+그림 출처: https://pragmaticwebsecurity.com/articles/oauthoidc/device-flow.html
+
 ```
 디바이스 그랜트 유형은 승인 코드 그랜트 유형과는 다른 부분이 있다. 승인 코드 그랜트 유형은 브라우저가 시작점이 된다.
 사용자가 브라우저에서 인증에 성공하면 권한 부여 서버의 승인 코드가 클라이언트 애플리케이션에 전달되는 구조라면 
