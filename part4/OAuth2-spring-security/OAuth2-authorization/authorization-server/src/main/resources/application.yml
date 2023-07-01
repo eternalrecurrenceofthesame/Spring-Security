@@ -1,0 +1,53 @@
+server:
+  port: 9000
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google-idp:
+            provider: google
+            client-id: ${GOOGLE_CLIENT_ID:google-client-id}
+            client-secret: ${GOOGLE_CLIENT_SECRET:google-client-secret}
+            scope: openid, https://www.googleapis.com/auth/userinfo.profile, https://www.googleapis.com/auth/userinfo.email
+            client-name: Sign in with Google
+          github-idp:
+            provider: github
+            client-id: ${GITHUB_CLIENT_ID:github-client-id}
+            client-secret: ${GITHUB_CLIENT_SECRET:github-client-secret}
+            scope: user:email, read:user
+            client-name: Sign in with GitHub
+        provider:
+          google:
+            user-name-attribute: email
+          github:
+            user-name-attribute: login
+
+# 데이터베이스 설정
+#spring.datasource:
+#  url: jdbc:mysql://localhost:3306/authorization_server?serverTimezone=UTC&characterEncoding=UTF-8
+#  username:
+#  password:
+#  driver-class-name: com.mysql.cj.jdbc.Driver
+
+#spring.jpa:
+#  hibernate:
+#    ddl-auto: none
+#  properties:
+#    hibernate:
+#      show_sql: true
+#      format_sql: true
+#      use_sql_comments: true
+
+
+#logging.level:
+#  org.hibernate.sql: DEBUG # 로그 레벨을 디버그로 설정해서 SQL 문과 실제 값을 출력한다. 상용환경에서는 지양한다.
+
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+    org.springframework.security.oauth2: INFO
