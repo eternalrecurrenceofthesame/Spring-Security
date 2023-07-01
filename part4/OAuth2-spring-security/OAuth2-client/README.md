@@ -57,9 +57,9 @@ OAuth 2 인증 방식을 스프링 시큐리티로 구현한 시나리오를 정
 
 ### 승인 코드 그랜트 유형
 
- ![code-flow](./codeflow_backend.png) 
-
 그림 출처: https://pragmaticwebsecurity.com/articles/oauthoidc/from-implicit-to-pkce.html
+
+ ![code-flow](./codeflow_backend.png) 
 
 ```
 권한이 없는 브라우저(사용자) 가 클라이언트 애플리케이션에 접근하면 클라이언트 애플리케이션은 브라우저를 권한 부여 서버의
@@ -99,10 +99,9 @@ OAuth 2 인증 방식을 스프링 시큐리티로 구현한 시나리오를 정
 이 클라이언트 인스턴스는 ServletOAuth2AuthorizedClientExchangeFilterFunction 필터를 통해서 관리할 수 있다. 
 ```
 ## 디바이스 코드 그랜트 유형
+그림 출처: https://pragmaticwebsecurity.com/articles/oauthoidc/device-flow.html
 
  ![device-flow](./deviceflow.png) 
-
-그림 출처: https://pragmaticwebsecurity.com/articles/oauthoidc/device-flow.html
 
 ```
 디바이스 그랜트 유형은 승인 코드 그랜트 유형과는 다른 부분이 있다. 승인 코드 그랜트 유형은 브라우저가 시작점이 된다.
