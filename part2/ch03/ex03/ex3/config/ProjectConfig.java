@@ -14,6 +14,9 @@ public class ProjectConfig {
 
     @Bean
     public UserDetailsService userDetailsService(DataSource dataSource){
+
+        // Jdbc 를 사용해서 값을 가져올 때 필요한 것들 테이블 컬럼 이름이 바뀌더라도 
+        // 아래 형식에 맞춰서 쿼리를 생성하면 된다. 
         String usersByUsernameQuery =
                 "select username, password, enabled from spring_users where username = ?";
         String authsByUserQuery =
