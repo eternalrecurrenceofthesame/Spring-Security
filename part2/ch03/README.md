@@ -145,12 +145,20 @@ resources 하위에 schema.sql, data.sql 을 이용해서 어플리케이션 실
 
 스프링 부트 2.5 부터 자동 sql 생성 기능을 사용하려면 spring.jpa.defer-datasource-initialization=true 
 설정을 해줘야 한다.
+
+스프링 부트 3.0 이상 버전부터는 data.sql 이 제대로 작동하지 않는다. 스프링 프레임워크가 자체적으로 만들어주는
+schema 또한 제대로 작동하지 않느 경우가 많으니 직접 데이터베이스에 생성하는 것을 추천한다. 
 ```
 ```
 * JdbcUserDetailsManager 등록하기
 
-ex3-ProjectConfig 참고 앞서 설명했지만 UserDetailsService 는 이름으로 유저 정보를 찾아온다. 그래서 Jdbc 를 이용할 때도
-이름으로 쿼리하면 된다.
+앞서 설명했지만 UserDetailsService 는 이름으로 유저 정보를 찾아온다. 그래서 Jdbc 를 이용할 때도 이름으로
+쿼리하면 된다.
+
+Jdbc 에서 유저 정보를 찾아올 때 사용하는 쿼리 형식이 정해져있다. 테이블의 컬럼값이 바뀌더라도 jdbc 에서 요구하는
+값에 맞춰서 SQL 을 만들어주면 된다.
+
+ ex3-ProjectConfig 참고
 ```
 ### 사용자 관리에 LdapUserDetailsManger 사용
 
